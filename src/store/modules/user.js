@@ -1,10 +1,11 @@
-import { login, logout, getInfo } from '@/api/user'
+import { getProfileAPI, loginAPI } from '@/api'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
-    token: getToken(),
+    token: getToken(), // vuex 的 state 值, 使用本地持久化 => 刷新时, 默认去本地取一个
+    userInfo: {}, // 用户的基本资料对象
     name: '',
     avatar: ''
   }
@@ -17,74 +18,39 @@ const mutations = {
     Object.assign(state, getDefaultState())
   },
   SET_TOKEN: (state, token) => {
-    state.token = token
+    state.token = token // vuex
+    setToken(token) // 本地
   },
   SET_NAME: (state, name) => {
     state.name = name
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
+  },
+  // 删除 token
+  REMOVE_TOKEN(state) {
+    state.token = ''
+    removeToken()
+  },
+  // 操作 userInfo 这个变量
+  SET_USER(state, value) {  // value => 请求到的信息对象
+    state.userInfo = value
+  },
+  // 删除用户信息
+  REMOVE_USER(state) {
+    state.userInfo = {}
   }
 }
 
 const actions = {
-  // user login
-  login({ commit }, userInfo) {
-    const { username, password } = userInfo
-    return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
-    })
+  // 封装 => 登录逻辑
+  async loginActions({ commit }, data) {
+    const res = await loginAPI(data)
+    commit('SET_TOKEN', res.data)
   },
-
-  // get user info
-  getInfo({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
-        const { data } = response
-
-        if (!data) {
-          return reject('Verification failed, please Login again.')
-        }
-
-        const { name, avatar } = data
-
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        resolve(data)
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
-
-  // user logout
-  logout({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
-        removeToken() // must remove  token  first
-        resetRouter()
-        commit('RESET_STATE')
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
-
-  // remove token
-  resetToken({ commit }) {
-    return new Promise(resolve => {
-      removeToken() // must remove  token  first
-      commit('RESET_STATE')
-      resolve()
-    })
+  async getUserInfoActions({ commit }) {
+    const { data: userObj } = await getProfileAPI()
+    commit('SET_USER', userObj)
   }
 }
 

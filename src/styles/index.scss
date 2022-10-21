@@ -3,6 +3,7 @@
 @import './transition.scss';
 @import './element-ui.scss';
 @import './sidebar.scss';
+@import './common.scss';  // 一定要写在下边 => 保证变量可以使用
 
 body {
   height: 100%;

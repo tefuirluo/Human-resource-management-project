@@ -24,19 +24,26 @@ module.exports = {
    * In most cases please use '/' !!!
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
-  publicPath: '/',
+  publicPath: './',
   outputDir: 'dist',
   assetsDir: 'static',
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
   devServer: {
-    port: port,
+    port: port, // 端口号
     open: true,
     overlay: {
       warnings: false,
       errors: true
-    }
+    },
     // before: require('./mock/mock-server.js')
+    // 配置代理
+    proxy: {
+      '/prod-api': {
+        target: 'http://ihrm.itheima.net', // 需要代理的地址
+        changeOrigin: true // 是否跨域
+      }
+    }
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
