@@ -88,6 +88,16 @@
           </el-col>
         </el-row>
       </el-dialog>
+
+      <!--给角色分配权限点 -> 弹框-->
+      <el-dialog title="分配权限点" :visible.sync="dialogVisible">
+        <assign-permission
+          v-model="dialogVisible"
+          role-id="roleId"
+          :permission-list="permissionList"
+          :perm-ids="permIds"
+        />
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -100,9 +110,15 @@ import {
   getProfileAPI,
   getRoleDetailAPI,
   getRoleListAPI,
-  updateRoleAPI
+  updateRoleAPI,
+  getPermissionListAPI
 } from '@/api'
+import assignPermission from '@/views/setting/assignPermission'
+import { transTree } from '@/utils'
 export default {
+  components: {
+    assignPermission
+  },
   data() {
     return {
       activeName: 'first',
@@ -115,6 +131,9 @@ export default {
       companyObj: {}, // 公司信息
       showDialog: false, // 控制弹框的隐藏和展示
       isEdit: false, // 新增-false | 编辑-true 角色状态
+      dialogVisible: false, // 显示 | 隐藏 -> 分配权限点的弹框
+      permissionList: [], // 所有权限点数据
+      permIds: [], // 此角色现有的角色点数据 -> 权限点 id 字符串值
       // 添加角色
       roleForm: {
         name: '',
@@ -134,8 +153,15 @@ export default {
   created() {
     this.getRoleListFn()
     this.getCompanyDetailFn()
+    this.getPermissionListFn()
   },
   methods: {
+    // 获取所有权限点列表
+    async getPermissionListFn() {
+      const res = await getPermissionListAPI()
+      this.permissionList = transTree(res.data, '0')
+    },
+
     // 获取角色所有列表
     async getRoleListFn() {
       const res = await getRoleListAPI(this.query)
@@ -164,7 +190,13 @@ export default {
     },
 
     // 设置角色
-    setRoles() {},
+    // roleObj -> 角色对象
+    async setRoles(roleObj) {
+      const res = await getRoleDetailAPI(roleObj.id)
+      this.dialogVisible = true
+      this.permIds = res.data.permIds
+      this.roleId = roleObj.id
+    },
 
     // 编辑角色
     // roleObj -> 行角色对象
