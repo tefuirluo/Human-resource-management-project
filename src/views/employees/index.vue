@@ -10,8 +10,8 @@
 
         <!-- 自定义右侧内容 -->
         <template #slot-right>
-          <el-button type="danger" size="small" @click="uploadBtnFn">导入excel</el-button>
-          <el-button type="success" size="small" @click="exportBtnFn">导出excel</el-button>
+          <el-button v-power="'import'" type="danger" size="small" @click="uploadBtnFn">导入excel</el-button>
+          <el-button v-power="'export'" type="success" size="small" @click="exportBtnFn">导出excel</el-button>
           <el-button type="primary" size="small" @click="addEmpBtnFn">新增员工</el-button>
         </template>
       </page-tools>

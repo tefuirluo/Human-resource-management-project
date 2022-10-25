@@ -31,7 +31,16 @@ export default {
       'sidebar'
     ]),
     routes() {
-      return this.$router.options.routes
+      // 用 addRouters, 左侧菜单不渲染:
+      // this.$router.options.routes 一次性的, 只能拿到 new VueRouter 时配置项里面的数组
+      // 后续 addRouters 添加的路由规则对象, 并没有影响到这里
+      // 解决: 把路由规则数组, 在 vuex 中, 自己再管理一份
+      // vuex 是响应式的, 只要改变, 就会更新
+      // 重点:
+      // router 路由对象内部有一个路由匹配的规则数组 => 内存
+      // 另一个路由数组 => vuex 专门给这里生成左侧导航
+      // return this.$router.options.routes
+      return this.$store.state.permission.routes
     },
     activeMenu() {
       const route = this.$route

@@ -4,10 +4,12 @@
 
     <!--<breadcrumb class="breadcrumb-container" />-->
     <div class="app-breadcrumb">
-      江苏传智播客教育科技股份有限公司
+      {{ $t('navbar.companyName') }}
       <span class="breadBtn">体验版</span>
     </div>
     <div class="right-menu">
+      <screen-full />
+      <lang class="right-menu-item" />
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img src="avatar" class="user-avatar">
@@ -123,6 +125,9 @@ export default {
     float: right;
     height: 100%;
     line-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &:focus {
       outline: none;

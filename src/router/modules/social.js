@@ -6,7 +6,7 @@ export default {
   children: [
     {
       path: '',
-      name: 'Social',
+      name: 'Social_Securitys',
       component: () => import('@/views/social'),
       meta: { title: '社保', icon: 'table' }
     }

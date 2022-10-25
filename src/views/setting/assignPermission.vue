@@ -59,6 +59,7 @@ export default {
 
     // 设置权限按钮
     setRolesBtn() {
+      this.$emit('addPerEV', this.$refs.theTree.getCheckedKeys())
       this.$emit('input', false)
     }
   }

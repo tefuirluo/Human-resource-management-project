@@ -90,12 +90,13 @@
       </el-dialog>
 
       <!--给角色分配权限点 -> 弹框-->
-      <el-dialog title="分配权限点" :visible.sync="dialogVisible">
+      <el-dialog title="分配权限点" :visible.sync="dialogVisible" @click="perDialogCloseFn">
         <assign-permission
           v-model="dialogVisible"
           role-id="roleId"
           :permission-list="permissionList"
           :perm-ids="permIds"
+          @addPerEV="addPermissionFn"
         />
       </el-dialog>
     </div>
@@ -111,7 +112,7 @@ import {
   getRoleDetailAPI,
   getRoleListAPI,
   updateRoleAPI,
-  getPermissionListAPI
+  getPermissionListAPI, assignPermAPI
 } from '@/api'
 import assignPermission from '@/views/setting/assignPermission'
 import { transTree } from '@/utils'
@@ -134,6 +135,7 @@ export default {
       dialogVisible: false, // 显示 | 隐藏 -> 分配权限点的弹框
       permissionList: [], // 所有权限点数据
       permIds: [], // 此角色现有的角色点数据 -> 权限点 id 字符串值
+      clickRoleId: '', // 点击的角色id
       // 添加角色
       roleForm: {
         name: '',
@@ -189,13 +191,14 @@ export default {
       this.getRoleListFn()
     },
 
-    // 设置角色
+    // 设置角色 -> 分配权限
     // roleObj -> 角色对象
     async setRoles(roleObj) {
       const res = await getRoleDetailAPI(roleObj.id)
       this.dialogVisible = true
       this.permIds = res.data.permIds
       this.roleId = roleObj.id
+      this.clickRoleId = roleObj.id
     },
 
     // 编辑角色
@@ -249,6 +252,19 @@ export default {
     roleCloseDialogFn() {
       this.$refs.roleForm.resetFields()
       this.showDialog = false
+    },
+
+    // 分配权限点 -> 弹窗关闭事件
+    perDialogCloseFn() {
+      this.permIds = []
+    },
+    // 确定给角色分配权限
+    // permIdsList -> 权限点 id 数组
+    async addPermissionFn(permIdsList) {
+      await assignPermAPI({
+        id: this.clickRoleId,
+        permIds: permIdsList
+      })
     }
   }
 }

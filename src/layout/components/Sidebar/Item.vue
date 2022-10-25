@@ -13,6 +13,7 @@ export default {
     }
   },
   render(h, context) {
+    const that = context.parent
     const { icon, title } = context.props
     const vnodes = []
 
@@ -25,7 +26,7 @@ export default {
     }
 
     if (title) {
-      vnodes.push(<span slot='title'>{(title)}</span>)
+      vnodes.push(<span slot='title'>{(that.$t(`sidebar.${title.toLowerCase()}`))}</span>)
     }
     return vnodes
   }

@@ -1,5 +1,6 @@
 import { getProfileAPI, getUserInfoAPI, loginAPI } from '@/api'
 import { getToken, setToken, removeToken } from '@/utils/auth'
+import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
@@ -52,11 +53,13 @@ const actions = {
     const { data: userObj } = await getProfileAPI()
     const { data: photoObj } = await getUserInfoAPI(userObj.userId)
     commit('SET_USER', { ...userObj, ...photoObj }) // 用户信息, 交到 mutations 保存到 userInfo 中
+    return userObj.roles.menus // 返回的页面权限点的英文字符串数组
   },
   // 封装 => 退出登录逻辑 -> 主动 | 被动
   logoutActions({ commit }) {
     commit('REMOVE_TOKEN')
     commit('REMOVE_USER')
+    resetRouter()
   }
 }
 
