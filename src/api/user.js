@@ -40,3 +40,14 @@ export function getProfileAPI() {
     method: 'POST'
   })
 }
+
+/**
+ * 获取员工基本信息
+ * @param id
+ * @returns {*}
+ */
+export function getUserInfoAPI(id) {
+  return request({
+    url: `/sys/user/${id}` // 把员工 id 值, 带在路径上传递给后台
+  })
+}

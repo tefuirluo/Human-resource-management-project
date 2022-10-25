@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
 import store from '@/store'
+import router from '@/router'
 
 // create an axios instance
 const service = axios.create({
@@ -41,7 +42,13 @@ service.interceptors.response.use(
     }
   },
   error => {
-    Message.error((error.message && error.message.data && error.message.data.message) || error.message)
+    Message.error((error.response && error.response.data && error.response.data.message) || error.message)
+    if (error?.response?.data?.code === 10002) {
+      // 清除 token, 用户信息
+      store.dispatch('user/logoutActions')
+      // 返回登录页
+      router.replace(`/login?redirect=${router.currentRoute.fullPath}`)
+    }
     return Promise.reject(error)
   }
 )

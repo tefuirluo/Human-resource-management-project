@@ -2,6 +2,7 @@ import router from './router'
 import store from '@/store'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css' // progress bar style
+import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -15,8 +16,8 @@ router.beforeEach(async(to, from, next) => {
       next('/')
       NProgress.done()
     } else {
-      if (!store.getters.name) { store.dispatch('user/getUserInfoActions') }
       next()
+      if (!store.getters.name) { store.dispatch('user/getUserInfoActions') }
     }
   } else {
     if (whiteList.includes(to.path)) {
@@ -28,7 +29,8 @@ router.beforeEach(async(to, from, next) => {
   }
 })
 
-router.afterEach(() => {
+router.afterEach((to, from) => {
   // 正常 next() 放行跳转了 才会走后置守卫 关闭正常流程进度条
+  document.title = getPageTitle(to.meta.title)
   NProgress.done()
 })

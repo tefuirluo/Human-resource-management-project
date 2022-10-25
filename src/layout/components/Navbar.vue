@@ -10,8 +10,8 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img src="@/assets/common/bigUserHeader.png" class="user-avatar">
-          <span class="name">管理员</span>
+          <img src="avatar" class="user-avatar">
+          <span class="name">{{ name }}</span>
           <i class="el-icon-caret-bottom" style="color:#fff" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -36,7 +36,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 
 export default {
@@ -46,16 +45,34 @@ export default {
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar'
+      'avatar',
+      'name'
     ])
   },
   methods: {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
+    // 退出登录 => 点击事件
     async logout() {
-      await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      // 为了提高用户体验 给用户一个确认框
+      this.$confirm('此操作将退出登录状态, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async() => {
+        await this.$store.dispatch('user/logoutActions')
+        this.$router.push(`/login?redirect=${encodeURIComponent(this.$route.fullPath)}`)
+        this.$message({
+          type: 'success',
+          message: '退出登录 - 成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消退出'
+        })
+      })
     }
   }
 }

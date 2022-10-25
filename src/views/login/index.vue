@@ -127,7 +127,7 @@ export default {
         if (valid) { // 通过 -> 发起请求
           try {
             await this.$store.dispatch('user/loginActions', this.loginForm)
-            this.$router.replace('/')
+            this.$router.replace(this.$route.query.redirect || '/')
           } catch (err) {
             console.dir(err)
           }

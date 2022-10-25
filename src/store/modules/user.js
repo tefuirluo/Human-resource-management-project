@@ -1,6 +1,5 @@
-import { getProfileAPI, loginAPI } from '@/api'
+import { getProfileAPI, getUserInfoAPI, loginAPI } from '@/api'
 import { getToken, setToken, removeToken } from '@/utils/auth'
-import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
@@ -33,7 +32,7 @@ const mutations = {
     removeToken()
   },
   // 操作 userInfo 这个变量
-  SET_USER(state, value) {  // value => 请求到的信息对象
+  SET_USER(state, value) { // value => 请求到的信息对象
     state.userInfo = value
   },
   // 删除用户信息
@@ -48,9 +47,16 @@ const actions = {
     const res = await loginAPI(data)
     commit('SET_TOKEN', res.data)
   },
+  // 封装 => 获取用户基本信息
   async getUserInfoActions({ commit }) {
     const { data: userObj } = await getProfileAPI()
-    commit('SET_USER', userObj)
+    const { data: photoObj } = await getUserInfoAPI(userObj.userId)
+    commit('SET_USER', { ...userObj, ...photoObj }) // 用户信息, 交到 mutations 保存到 userInfo 中
+  },
+  // 封装 => 退出登录逻辑 -> 主动 | 被动
+  logoutActions({ commit }) {
+    commit('REMOVE_TOKEN')
+    commit('REMOVE_USER')
   }
 }
 
